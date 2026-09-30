@@ -1,0 +1,32 @@
+# ORIGINAL -> NORMALIZED
+
+assembly/FPV_car_assembly_sequence_1080p_20260930110627.mp4
+  -> 01_ASSEMBLY/fpv_car_assembly.mp4
+
+vehicles/blue car/blue_ford.png
+  -> 02_VEHICLES/01_BLUE/blue_car.png
+vehicles/blue car/blue_ford_car_placeholder.glb
+  -> 02_VEHICLES/01_BLUE/blue_car.glb
+vehicles/blue car/blue_car_explode_view.mp4
+  -> 02_VEHICLES/01_BLUE/blue_car_exploded_reference.mp4
+
+vehicles/green car/green_ford.png
+  -> 02_VEHICLES/02_GREEN/green_car.png
+vehicles/green car/green_ford_car.glb
+  -> 02_VEHICLES/02_GREEN/green_car.glb
+vehicles/green car/green_car_explode_view.mp4
+  -> 02_VEHICLES/02_GREEN/green_car_exploded_reference.mp4
+
+vehicles/red car/red_ford.png
+  -> 02_VEHICLES/03_RED/red_car.png
+vehicles/red car/red_ford_car.glb
+  -> 02_VEHICLES/03_RED/red_car.glb
+vehicles/red car/red_car_explode_view.mp4
+  -> 02_VEHICLES/03_RED/red_car_exploded_reference.mp4
+
+vehicles/white car/white_ford.png
+  -> 02_VEHICLES/04_WHITE/white_car.png
+vehicles/white car/white_ford_car.glb
+  -> 02_VEHICLES/04_WHITE/white_car.glb
+vehicles/white car/white_car_explode_view.mp4
+  -> 02_VEHICLES/04_WHITE/white_car_exploded_reference.mp4

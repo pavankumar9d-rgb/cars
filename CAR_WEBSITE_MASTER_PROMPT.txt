@@ -1,0 +1,988 @@
+CAR WEBSITE — MASTER BUILD PROMPT V2
+====================================================
+
+ROLE
+----
+Act as the lead senior frontend engineer, Three.js/R3F engineer, motion
+designer, UX engineer, and performance engineer.
+
+BUILD THE COMPLETE WEBSITE, NOT A MOCKUP.
+
+The supplied CAR_WEBSITE_ASSETS folder is the source of truth for assets.
+Inspect it before coding.
+
+ALSO READ:
+- 03_DOCS/ASSET_MANIFEST.md
+- 03_DOCS/RENAME_MAP.txt
+- 03_DOCS/SKILL_TRIGGERS.txt
+
+The supplied skill trigger file explicitly maps terms such as:
+- "build this feature" / "implement this" / "full implementation" -> gsd-execute-phase
+- "three.js", "3d scene", "3d scrolling", "react three fiber", "r3f",
+  "camera rig", "scroll rig", "immersive scroll" -> threeui
+- "make it premium", "make it stunning", "landing page design" -> ui-ux-pro-max
+- "animate this", "reference video" -> openmontage
+- "verification" is always-on
+- "think before coding, simplicity, surgical, verify" is always-on
+- "production ready" / "zero bugs" -> impeccable
+- "review my code" / "check quality" -> code-review-and-quality
+- "this is broken" / "debug" -> systematic-debugging
+Use those skills when the environment supports them. Do not merely mention
+them: apply their intent to the implementation and verification process.
+
+====================================================
+1. PRODUCT CONCEPT
+====================================================
+
+This is NOT a motorcycle website and NOT a KTM clone.
+
+Build an original premium cinematic CAR product experience.
+
+The central story is:
+
+FPV ASSEMBLY
+    ↓
+COMPLETE CAR
+    ↓
+FOUR-COLOR COLLECTION
+    ↓
+CARS SIDE-BY-SIDE
+    ↓
+360° ROTATION / ORBIT
+    ↓
+USER SELECTS ONE CAR
+    ↓
+SELECTED CAR BECOMES PRIMARY
+    ↓
+SCROLL-DRIVEN CINEMATIC ORBIT
+    ↓
+EXPLODED VIEW
+    ↓
+PARTS SEPARATE PHYSICALLY
+    ↓
+MAXIMUM EXPLOSION
+    ↓
+PARTS REASSEMBLE
+    ↓
+SPECS
+    ↓
+CTA
+
+The experience must feel like one continuous automotive film.
+
+No hard cuts.
+No random teleportation.
+No generic landing-page card grid.
+No fake "3D" made from flat images when the GLB can be used.
+
+====================================================
+2. ASSET INSPECTION — DO THIS FIRST
+====================================================
+
+Before writing animation code:
+
+1. Inspect every supplied GLB.
+2. Inspect the GLB scene graph/node hierarchy.
+3. Inspect the supplied assembly video.
+4. Inspect all four exploded-view reference videos.
+5. Inspect the exploded-view frame sequences.
+6. Inspect all four car poster/reference images.
+7. Read the manifest.
+
+Do not assume node names.
+
+Create a semantic mapping after inspecting each GLB.
+
+Example:
+
+semanticPart = {
+  body,
+  hood,
+  cabin,
+  glass,
+  chassis,
+  engine,
+  transmission,
+  frontLeftWheel,
+  frontRightWheel,
+  rearLeftWheel,
+  rearRightWheel,
+  suspension,
+  brakes,
+  exhaust,
+  lights
+}
+
+Map each semantic part to ACTUAL nodes in the corresponding GLB.
+
+If a part does not exist as an independent node, do not pretend it does.
+Use the closest real parent/group and document the mapping.
+
+====================================================
+3. TECH STACK
+====================================================
+
+Next.js 14
+App Router
+TypeScript
+Tailwind CSS
+
+Three.js
+@react-three/fiber
+@react-three/drei
+
+GSAP
+GSAP ScrollTrigger
+
+@studio-freight/lenis
+
+Use a clean component architecture.
+
+Suggested structure:
+
+app/
+  page.tsx
+  layout.tsx
+
+components/
+  car/
+    CarScene.tsx
+    CarModel.tsx
+    CarCollection.tsx
+    CarSelector.tsx
+    ExplodedCar.tsx
+    CarPartMap.ts
+  sections/
+    AssemblySection.tsx
+    CollectionSection.tsx
+    SelectedCarSection.tsx
+    EngineSection.tsx
+    ChassisSection.tsx
+    WheelsSection.tsx
+    ExplodedSection.tsx
+    SpecsSection.tsx
+    CTASection.tsx
+  motion/
+    useScrollProgress.ts
+    scrollConfig.ts
+  providers/
+    LenisProvider.tsx
+  ui/
+    LoadingScreen.tsx
+    ScrollProgress.tsx
+
+====================================================
+4. CANONICAL ASSET CONFIG
+====================================================
+
+Use this single source of truth:
+
+const cars = {
+  blue: {
+    id: "blue",
+    name: "BLUE",
+    model: "/assets/vehicles/blue/blue_car.glb",
+    poster: "/assets/vehicles/blue/blue_car.png",
+    explodedReference:
+      "/assets/vehicles/blue/blue_car_exploded_reference.mp4"
+  },
+  green: {
+    id: "green",
+    name: "GREEN",
+    model: "/assets/vehicles/green/green_car.glb",
+    poster: "/assets/vehicles/green/green_car.png",
+    explodedReference:
+      "/assets/vehicles/green/green_car_exploded_reference.mp4"
+  },
+  red: {
+    id: "red",
+    name: "RED",
+    model: "/assets/vehicles/red/red_car.glb",
+    poster: "/assets/vehicles/red/red_car.png",
+    explodedReference:
+      "/assets/vehicles/red/red_car_exploded_reference.mp4"
+  },
+  white: {
+    id: "white",
+    name: "WHITE",
+    model: "/assets/vehicles/white/white_car.glb",
+    poster: "/assets/vehicles/white/white_car.png",
+    explodedReference:
+      "/assets/vehicles/white/white_car_exploded_reference.mp4"
+  }
+};
+
+DO NOT change this mapping unless the actual filesystem is inspected and
+the replacement path is proven to exist.
+
+====================================================
+5. OPENING — FPV ASSEMBLY
+====================================================
+
+Use:
+
+/assets/assembly/fpv_car_assembly.mp4
+
+as the reference for the opening assembly experience.
+
+The first viewport should feel like the vehicle is being constructed.
+
+Dark cinematic environment.
+Minimal UI.
+Strong silhouette.
+Premium automotive lighting.
+Subtle atmospheric depth.
+
+The reference video is not required to become the final visible UI.
+Prefer reproducing the feeling with the real 3D model where practical.
+
+Use the video as:
+- reference
+- timing reference
+- fallback/poster source where appropriate
+
+Do not simply display a large normal video player.
+
+====================================================
+6. COLLECTION — FOUR CARS
+====================================================
+
+After assembly:
+
+BLUE      GREEN      RED      WHITE
+
+The four cars should be arranged deliberately side-by-side.
+
+Desktop:
+all four can be visible with cinematic spacing.
+
+Tablet:
+reduce spacing and scale.
+
+Mobile:
+show one main car at a time or use a controlled horizontal presentation.
+Do not squeeze four large models into a narrow viewport.
+
+Each car must remain a real GLB.
+
+Each has:
+- hover state
+- focus state
+- click/tap selection
+- 360° orbit capability
+
+====================================================
+7. 360° ORBIT
+====================================================
+
+Every car must support a full 360-degree rotation.
+
+The rotation must be:
+
+smooth
+continuous
+cinematic
+damped
+predictable
+
+No snapping.
+
+Use interpolation/lerp or damping.
+
+The orbit can be camera-based, model-based, or a combination, but it must
+preserve the illusion that the viewer is inspecting the real vehicle.
+
+When possible, use a stable target/lookAt point around the vehicle's center.
+
+Do not let the camera drift.
+
+====================================================
+8. SELECTION
+====================================================
+
+When the user clicks a car:
+
+- selected car becomes dominant
+- other cars reduce visual priority
+- camera smoothly reframes
+- orientation is preserved
+- scale is preserved
+- transition is interpolated
+- no hard cut
+
+The selected car becomes the hero 3D object.
+
+The user should immediately understand which car is active.
+
+====================================================
+9. LENIS + GSAP
+====================================================
+
+Initialize Lenis.
+
+Synchronize it with GSAP:
+
+lenis.on("scroll", ScrollTrigger.update);
+
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000);
+});
+
+gsap.ticker.lagSmoothing(0);
+
+Do not create competing animation clocks.
+
+Do not create multiple independent RAF loops.
+
+====================================================
+10. ONE MASTER SCROLL DRIVER
+====================================================
+
+Use one master scroll timeline / normalized progress driver.
+
+ScrollTrigger:
+
+scrub: 1
+
+Map global progress approximately:
+
+0.00 - 0.12
+FPV assembly / opening
+
+0.12 - 0.27
+four-car collection
+
+0.27 - 0.40
+selected-car transition
+
+0.40 - 0.56
+360° cinematic orbit
+
+0.56 - 0.72
+exploded view begins
+
+0.72 - 0.84
+maximum exploded state
+
+0.84 - 0.94
+reassembly
+
+0.94 - 1.00
+specs + CTA
+
+Tune these values visually.
+
+The important rule is that all motion derives from the same normalized
+progress.
+
+====================================================
+11. PERSISTENT CANVAS
+====================================================
+
+Use ONE persistent R3F Canvas.
+
+Do not destroy and recreate the Canvas between sections.
+
+The Canvas stays pinned/fixed behind the scrolling content.
+
+HTML content scrolls over the scene.
+
+Use:
+
+dpr={[1, 2]}
+
+Clamp DPR on mobile.
+
+Use Suspense.
+
+Use drei useProgress() for loading.
+
+Provide a polished loading screen.
+
+====================================================
+12. MODEL LOADING
+====================================================
+
+Use:
+
+useGLTF()
+
+Preload models.
+
+Do not load everything synchronously if it harms first paint.
+
+Prefer progressive loading:
+
+first:
+selected/primary model
+
+then:
+remaining collection models
+
+Use poster images while GLBs load.
+
+If a GLB fails:
+show its supplied PNG poster and keep the page functional.
+
+Never show an empty black Canvas with no explanation.
+
+====================================================
+13. EXPLODED VIEW — CRITICAL
+====================================================
+
+The exploded view must be a TRUE 3D transformation.
+
+Do NOT fake it by:
+- scaling opacity
+- swapping to the MP4
+- swapping to JPG frames
+- teleporting the entire car
+- moving every object by the same vector
+
+The MP4 and extracted frames are references.
+
+The actual GLB should be exploded by moving its real components.
+
+Concept:
+
+BODY
+up/out
+
+HOOD
+forward/up
+
+ENGINE
+down/slightly forward
+
+TRANSMISSION
+down/back
+
+CHASSIS
+down
+
+FRONT WHEELS
+outward
+
+REAR WHEELS
+outward
+
+SUSPENSION
+outward
+
+BRAKES
+outward with wheels/axles
+
+BODY PANELS
+slightly outward
+
+The exact directions and distances MUST be derived from the reference videos
+and the actual model coordinate system.
+
+Create:
+
+const explodedTargets = {
+  body: ...,
+  hood: ...,
+  engine: ...,
+  transmission: ...,
+  chassis: ...,
+  frontLeftWheel: ...,
+  frontRightWheel: ...,
+  rearLeftWheel: ...,
+  rearRightWheel: ...,
+  suspension: ...,
+  brakes: ...
+};
+
+Store immutable assembled transforms.
+
+Never do:
+
+object.position.x += value
+
+because that causes cumulative drift.
+
+Instead:
+
+current = lerp(assembled, exploded, explosionProgress)
+
+or equivalent stable interpolation.
+
+Scrolling backwards must return every component to the exact assembled pose.
+
+====================================================
+14. EXPLOSION TIMING
+====================================================
+
+Do not explode everything simultaneously.
+
+Stage the explosion.
+
+Example:
+
+0.00
+assembled
+
+0.15
+outer body panels begin
+
+0.30
+wheels / suspension begin
+
+0.45
+hood / cabin separate
+
+0.60
+engine / transmission separate
+
+0.75
+chassis separates
+
+0.90
+maximum separation
+
+1.00
+hold
+
+Then reverse exactly when scrolling backward.
+
+Use smooth easing, but keep scroll responsiveness.
+
+====================================================
+15. REFERENCE FRAME SEQUENCES
+====================================================
+
+The supplied extracted frame sequences are valuable references.
+
+Use them to understand:
+
+- exact explosion order
+- relative spacing
+- camera position
+- part grouping
+- timing
+
+Do not automatically render all frames into the website.
+
+Prefer the actual GLB for interaction.
+
+The reference frames are especially useful during implementation/QA.
+
+====================================================
+16. CAMERA
+====================================================
+
+The camera should feel cinematic.
+
+Opening:
+dark front 3/4
+
+Collection:
+wide framing
+
+Selected car:
+closer 3/4
+
+Orbit:
+controlled 360 inspection
+
+Engine:
+push toward engine
+
+Chassis:
+lower 3/4
+
+Wheels:
+low angle
+
+Explosion:
+pull back to maintain part visibility
+
+Maximum explosion:
+slightly wider perspective
+
+Reassembly:
+return toward hero framing
+
+No hard camera cuts.
+
+Use lerped camera position, target and/or quaternion.
+
+====================================================
+17. SECTION CONTENT
+====================================================
+
+SECTION 01
+ASSEMBLY
+
+Minimal headline.
+
+Examples of original copy:
+
+BUILT
+IN MOTION.
+
+or
+
+FORM
+IN MOTION.
+
+Do not copy another brand's slogan.
+
+----------------------------------------------------
+
+SECTION 02
+THE COLLECTION
+
+Show:
+
+BLUE
+GREEN
+RED
+WHITE
+
+Interaction label:
+
+SELECT YOUR CAR
+
+----------------------------------------------------
+
+SECTION 03
+SELECTED CAR
+
+Large selected vehicle.
+
+360° inspection.
+
+Minimal text.
+
+----------------------------------------------------
+
+SECTION 04
+ENGINE
+
+Focus on actual engine geometry.
+
+Use labels such as:
+
+POWERTRAIN
+ENGINE
+PERFORMANCE
+
+Do NOT invent numerical specifications.
+
+----------------------------------------------------
+
+SECTION 05
+CHASSIS
+
+Highlight:
+
+CHASSIS
+SUSPENSION
+STRUCTURE
+
+Use thin leader lines.
+
+Leader lines must correspond to actual world/screen positions.
+
+----------------------------------------------------
+
+SECTION 06
+WHEELS + BRAKES
+
+Low-angle shot.
+
+Show wheel rotation.
+
+Show brake disc.
+
+Do not animate a brake component independently if it is not actually separate
+in the GLB.
+
+----------------------------------------------------
+
+SECTION 07
+EXPLODED VIEW
+
+Primary visual payoff.
+
+Large clean explosion.
+
+Parts remain readable.
+
+Do not let components overlap randomly.
+
+----------------------------------------------------
+
+SECTION 08
+REASSEMBLY
+
+Exact reverse.
+
+No transform drift.
+
+----------------------------------------------------
+
+SECTION 09
+SPECS
+
+Create a premium spec layout.
+
+Only populate values from verified supplied data.
+
+No invented horsepower.
+No invented torque.
+No invented top speed.
+No invented 0-100.
+No invented dimensions.
+No invented price.
+
+Use configurable placeholders if no verified values exist.
+
+----------------------------------------------------
+
+SECTION 10
+CTA
+
+Premium final call-to-action.
+
+Example:
+
+BOOK A TEST DRIVE
+
+Keep the button usable and visible.
+
+====================================================
+18. TYPOGRAPHY
+====================================================
+
+Use a condensed uppercase display style.
+
+Headlines split into spans.
+
+Reveal with:
+
+y: 110%
+opacity: 0 -> 1
+stagger: 0.05
+ease: power4.out
+
+Keep text animation subordinate to the 3D scene.
+
+Do not animate every DOM element excessively.
+
+====================================================
+19. VISUAL SYSTEM
+====================================================
+
+Overall:
+
+near-black background
+metallic materials
+high-contrast lighting
+subtle reflections
+premium automotive studio feel
+
+Accent color should adapt to selected vehicle where appropriate.
+
+Do not make the interface look like a generic orange KTM page.
+
+This is an original car brand/product experience.
+
+====================================================
+20. SCROLL PROGRESS
+====================================================
+
+Thin vertical progress indicator on right edge.
+
+Minimal.
+
+Actual page progress.
+
+Desktop:
+visible.
+
+Mobile:
+smaller and less intrusive.
+
+====================================================
+21. RESPONSIVE
+====================================================
+
+Desktop:
+full cinematic experience.
+
+Tablet:
+reduced camera distance and orbit range.
+
+Mobile:
+- reduce orbit range
+- reduce explosion distance
+- lower DPR
+- reduce secondary effects
+- reduce simultaneous model count
+- prioritize selected car
+
+Do not simply shrink desktop layout.
+
+====================================================
+22. REDUCED MOTION
+====================================================
+
+Respect:
+
+prefers-reduced-motion: reduce
+
+In reduced motion:
+
+- reduce camera movement
+- disable aggressive orbit
+- disable complex explosion interpolation
+- prefer posters/reference media
+- keep navigation and content usable
+
+Never make the site inaccessible because of motion.
+
+====================================================
+23. PERFORMANCE
+====================================================
+
+Use:
+
+GLB preloading strategically
+Draco compression where compatible
+lazy loading
+Suspense
+poster fallback
+DPR clamp
+mobile optimization
+proper disposal
+avoid duplicate models
+avoid duplicate Canvas instances
+
+Do not load four heavy models at maximum quality before first paint.
+
+====================================================
+24. DEBUGGING
+====================================================
+
+Create:
+
+DEBUG_3D = false
+
+When true, show:
+
+selected car
+scroll progress
+explosion progress
+camera coordinates
+loaded model
+semantic node mapping
+
+Also log the actual GLB scene graph once during development.
+
+Remove/disable noisy logs for production.
+
+====================================================
+25. QA / VERIFICATION
+====================================================
+
+Before declaring the build finished:
+
+- inspect all asset paths
+- run the dev server
+- run production build
+- inspect browser console
+- check for hydration errors
+- check for 404s
+- check all four GLBs
+- check all four color selections
+- check 360 rotation
+- check forward scrolling
+- check backward scrolling
+- check explosion
+- check reassembly
+- check mobile
+- check reduced motion
+- check loading state
+- check fallback state
+- check no horizontal overflow
+- check CTA
+- check pointer events
+- check memory/disposal behavior
+
+Do not claim completion until verification has actually been performed.
+
+====================================================
+26. IMPORTANT ANTI-MISUNDERSTANDING RULES
+====================================================
+
+NEVER:
+
+- invent missing assets
+- invent vehicle specifications
+- swap colors
+- use wrong GLB for a color
+- assume GLB node names
+- use a reference video as if it were the actual interactive 3D
+- teleport objects
+- accumulate transforms every frame
+- create multiple competing scroll drivers
+- create multiple persistent Canvases
+- hard cut between sections
+- copy KTM branding
+- create a generic card-grid website
+
+ALWAYS:
+
+- inspect first
+- map assets explicitly
+- map GLB nodes explicitly
+- use one scroll progress source
+- preserve original transforms
+- interpolate continuously
+- verify paths
+- verify runtime behavior
+- use supplied reference material as visual evidence
+
+====================================================
+27. FINAL BUILD TARGET
+====================================================
+
+The finished experience should feel like:
+
+A premium automotive launch film
+that happens to be an interactive website.
+
+The key visual sequence is:
+
+FPV ASSEMBLY
+→
+FOUR CARS SIDE-BY-SIDE
+→
+360° ROTATION
+→
+CLICK ONE
+→
+CAR BECOMES HERO
+→
+SCROLL
+→
+CINEMATIC ORBIT
+→
+PHYSICAL EXPLOSION
+→
+MAXIMUM EXPLODED VIEW
+→
+REASSEMBLY
+→
+SPECS
+→
+BOOK A TEST DRIVE
+
+Build it as a real working Next.js + R3F application.
+
+Do not stop at a design concept.
+Do not return only instructions.
+Implement, test, debug, and verify.
